@@ -1,4 +1,4 @@
-"use client";
+"use server";
 
 import Logout from "@/components/Logout";
 import { auth } from "@/lib/auth";
@@ -17,9 +17,9 @@ export default async function DashboardPage() {
       <h1>Hello {session.user.email}</h1>
       <p>Role: {session.user.role}</p>
 
-      {/* <Logout /> */}
+      <Logout />
 
-      <button onClick={() => signOut()}>Sign Out</button>
+      {/* <button onClick={() => signOut()}>Sign Out</button> */}
     </div>
   );
 }

@@ -21,6 +21,7 @@ model User {
   name          String?
   username      String?         @unique
   email         String?         @unique
+  hashedPassword String?
   emailVerified DateTime?
   image         String?
   role          Role?           @default(USER)
