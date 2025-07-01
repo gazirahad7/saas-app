@@ -1,6 +1,5 @@
 // prisma/seed.ts
-import { PrismaClient } from "../src/generated/prisma"; // Adjust the import path as necessary
-
+import { PrismaClient } from "../src/generated/prisma";
 const prisma = new PrismaClient();
 
 async function main() {
