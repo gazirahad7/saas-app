@@ -11,7 +11,7 @@ function AuthButton() {
       className={`
         ${pending ? "bg-gray-500 text-white" : "bg-blue-500 text-white"}
 
-        w-full 
+        w-full rounded h-10
         
     `}
     >

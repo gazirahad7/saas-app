@@ -29,6 +29,12 @@ function Navbar() {
               Login
             </Link>
           </li>
+
+          <li>
+            <Link href="/signup" className="text-white hover:text-gray-300">
+              Signup
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
