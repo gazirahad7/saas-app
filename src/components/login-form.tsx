@@ -14,9 +14,12 @@ export function LoginForm({
 }: React.ComponentProps<"form">) {
   return (
     <form
-      action={loginWithCredentials}
-      className={cn("flex flex-col gap-6", className)}
-      {...props}
+      action={async (formData) => {
+        const result = await loginWithCredentials(formData);
+        if (result?.error) {
+          console.error(result.error);
+        }
+      }}
     >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>

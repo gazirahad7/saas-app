@@ -15,7 +15,12 @@ export function SignupForm({
 }: React.ComponentProps<"form">) {
   return (
     <form
-      action={loginWithCredentials}
+      action={async (formData) => {
+        const result = await loginWithCredentials(formData);
+        if (result?.error) {
+          console.error(result.error);
+        }
+      }}
       className={cn("flex flex-col gap-6", className)}
       {...props}
     >

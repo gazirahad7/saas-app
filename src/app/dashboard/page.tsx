@@ -4,6 +4,7 @@ import Logout from "@/components/Logout";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/dist/server/api-utils";
 import { signOut } from "next-auth/react";
+import Image from "next/image";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -13,9 +14,18 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center h-screen space-y-4">
       <h1>Hello {session.user.email}</h1>
-      <p>Role: {session.user.role}</p>
+      <p>Session User Name: {session.user.name}</p>
+      <p>Session Expires: {session.expires}</p>
+
+      <Image
+        src={session.user.image || "/placeholder.png"}
+        alt="User Avatar"
+        width={50}
+        height={50}
+        className="rounded-full"
+      />
 
       <Logout />
 
