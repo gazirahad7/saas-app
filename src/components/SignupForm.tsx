@@ -40,11 +40,10 @@ export function SignupForm({
     } else if (state.success) {
       console.log("User saved successfully");
       // setErrorMessage(null);
-      // Redirect to dashboard or another page
 
       setTimeout(() => {
         redirect("/dashboard");
-      }, 1000); // Redirect after 1 second
+      }, 1000);
     }
   }, [state]);
 
@@ -57,7 +56,6 @@ export function SignupForm({
     const validation = UserValidations.safeParse(fields);
     if (!validation.success) {
       //console.error("Validation failed:", validation.error);
-      //return;
 
       setErrorMessage(
         formatErrorMessages(validation.error.flatten().fieldErrors)
@@ -99,10 +97,6 @@ export function SignupForm({
           <Input id="password" type="password" name="password" required />
         </div>
 
-        {/* {errorMessage && (
-          <span className="text-red-500 text-sm">{errorMessage}</span>
-        )} */}
-
         {state.success ? (
           <span className="text-green-500 text-sm">
             Signup successful! Redirecting...
@@ -112,7 +106,6 @@ export function SignupForm({
             <span className="text-red-500 text-sm">{errorMessage}</span>
           )
         )}
-
         <SignupButton />
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
