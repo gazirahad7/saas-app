@@ -1,28 +1,79 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { login, saveUser } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { login } from "@/actions/auth";
-import AuthButton from "@/components/AuthButton";
-import { loginWithCredentials } from "@/actions/auth";
+import { cn } from "@/lib/utils";
+import { UserValidations } from "@/lib/utils/Uservalidations";
 import Link from "next/link";
+import { use, useActionState, useState, useEffect } from "react";
+import SignupButton from "./SignupButton";
+
+import { formatErrorMessages } from "@/lib/utils/errors";
+import { error } from "console";
+import { redirect } from "next/navigation";
+
+import React from "react";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [state, formAction] = useActionState(saveUser, {
+    error: false,
+    success: false,
+  });
+
+  //
+
+  useEffect(() => {
+    if (state.error) {
+      if (typeof state.errorDetails === "string") {
+        setErrorMessage(state.errorDetails);
+      } else {
+        setErrorMessage(formatErrorMessages(state.errorDetails));
+      }
+      setErrorMessage(formatErrorMessages(state.errorDetails));
+    } else if (state.success) {
+      console.log("User saved successfully");
+      // setErrorMessage(null);
+      // Redirect to dashboard or another page
+
+      setTimeout(() => {
+        redirect("/dashboard");
+      }, 1000); // Redirect after 1 second
+    }
+  }, [state]);
+
+  //
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const fields = Object.fromEntries(formData.entries());
+
+    const validation = UserValidations.safeParse(fields);
+    if (!validation.success) {
+      //console.error("Validation failed:", validation.error);
+      //return;
+
+      setErrorMessage(
+        formatErrorMessages(validation.error.flatten().fieldErrors)
+      );
+    } else {
+      React.startTransition(() => {
+        formAction({ formData });
+      });
+    }
+  };
+
   return (
     <form
-      action={async (formData) => {
-        const result = await loginWithCredentials(formData);
-        if (result?.error) {
-          console.error(result.error);
-        }
-      }}
       className={cn("flex flex-col gap-6", className)}
       {...props}
+      onSubmit={handleSubmit}
     >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Sign UP</h1>
@@ -48,7 +99,21 @@ export function SignupForm({
           <Input id="password" type="password" name="password" required />
         </div>
 
-        <AuthButton />
+        {/* {errorMessage && (
+          <span className="text-red-500 text-sm">{errorMessage}</span>
+        )} */}
+
+        {state.success ? (
+          <span className="text-green-500 text-sm">
+            Signup successful! Redirecting...
+          </span>
+        ) : (
+          errorMessage && (
+            <span className="text-red-500 text-sm">{errorMessage}</span>
+          )
+        )}
+
+        <SignupButton />
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
             Or continue with

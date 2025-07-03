@@ -30,7 +30,7 @@ export const {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-
+      /*
       authorize: async (credentials) => {
         if (!credentials || !credentials?.email || !credentials?.password) {
           //throw new Error("Email and password are required");
@@ -68,6 +68,28 @@ export const {
         }
 
         return user;
+      },
+*/
+      // update code
+
+      authorize: async (credentials) => {
+        const { email, password } = credentials ?? {};
+        if (!email || !password) throw new Error("Missing credentials");
+
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user || !user.hashedPassword) {
+          throw new Error("Invalid email or password");
+        }
+
+        const isValid = bcrypt.compareSync(password, user.hashedPassword);
+        if (!isValid) throw new Error("Invalid email or password");
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
       },
     }),
   ],
