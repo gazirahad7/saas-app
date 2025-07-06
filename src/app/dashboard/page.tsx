@@ -1,35 +1,22 @@
-"use server";
+// app/(dashboard)/page.tsx
 
-import Logout from "@/components/Logout";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/dist/server/api-utils";
-import { signOut } from "next-auth/react";
-import Image from "next/image";
+import { SectionCards } from "@/components/section-cards";
+import { DataTable } from "@/components/data-table";
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import data from "./data.json";
 
-export default async function DashboardPage() {
-  const session = await auth();
-
-  if (!session) {
-    return <p>You must be signed in.</p>;
-  }
-
+export default function DashboardPage() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen space-y-4">
-      <h1>Hello {session.user.email}</h1>
-      <p>Session User Name: {session.user.name}</p>
-      <p>Session Expires: {session.expires}</p>
-
-      <Image
-        src={session.user.image || "/placeholder.png"}
-        alt="User Avatar"
-        width={50}
-        height={50}
-        className="rounded-full"
-      />
-
-      <Logout />
-
-      {/* <button onClick={() => signOut()}>Sign Out</button> */}
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <SectionCards />
+          <div className="px-4 lg:px-6">
+            <ChartAreaInteractive />
+          </div>
+          <DataTable data={data} />
+        </div>
+      </div>
     </div>
   );
 }
