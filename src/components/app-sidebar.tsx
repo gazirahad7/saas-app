@@ -151,24 +151,28 @@ const data = {
   ],
 };
 
-export async function AppSidebar({
+export function AppSidebar({
+  user,
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
-  const session = await auth(); // or use getServerSession() if needed
+}: {
+  user: { name: string; email: string; avatar: string };
+  props?: React.HTMLAttributes<HTMLDivElement>;
+}) {
+  // const session = await auth();
 
-  const user = session?.user
-    ? {
-        name: session.user.name || "Unknown User",
-        email: session.user.email || "unknown@example.com",
-        avatar: session.user.image || "/placeholder.png",
-      }
-    : {
-        name: "Guest",
-        email: "guest@example.com",
-        avatar: "/placeholder.png",
-      };
+  // const user = session?.user
+  //   ? {
+  //       name: session.user.name || "Unknown User",
+  //       email: session.user.email || "unknown@example.com",
+  //       avatar: session.user.image || "/placeholder.png",
+  //     }
+  //   : {
+  //       name: "Guest",
+  //       email: "guest@example.com",
+  //       avatar: "/placeholder.png",
+  //     };
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="offcanvas">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

@@ -1,5 +1,3 @@
-// app/(dashboard)/page.tsx
-
 import { SectionCards } from "@/components/section-cards";
 import { DataTable } from "@/components/data-table";
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
