@@ -1,4 +1,5 @@
 "use client";
+import { auth } from "@/lib/auth";
 
 import * as React from "react";
 import {
@@ -150,7 +151,22 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export async function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const session = await auth(); // or use getServerSession() if needed
+
+  const user = session?.user
+    ? {
+        name: session.user.name || "Unknown User",
+        email: session.user.email || "unknown@example.com",
+        avatar: session.user.image || "/placeholder.png",
+      }
+    : {
+        name: "Guest",
+        email: "guest@example.com",
+        avatar: "/placeholder.png",
+      };
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -174,7 +190,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );
