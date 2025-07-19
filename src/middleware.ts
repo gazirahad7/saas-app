@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // This middleware checks if the user is authenticated before allowing access to protected routes.
-const protectedRoutes = ["/middleware"];
+const protectedRoutes = ["/middleware", "/dashboard"];
 
 export default async function middleware(request: NextRequest) {
   const session = await auth();
@@ -17,6 +17,7 @@ export default async function middleware(request: NextRequest) {
 
   if (!session && isProtectedRoute) {
     const absoluteUrl = new URL("/", request.nextUrl.origin);
+
     return NextResponse.redirect(absoluteUrl.toString());
   }
 

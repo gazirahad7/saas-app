@@ -12,7 +12,7 @@ export default function Home() {
         Welcome to Next.js with Tailwind CSS!
       </h1> */}
 
-        <h1 className="text-3xl font-bold mb-4  text-center py-20">
+        <h1 className="text-3xl font-bold mb-4  text-center py-20 text-black ">
           Landing Page
         </h1>
       </div>
