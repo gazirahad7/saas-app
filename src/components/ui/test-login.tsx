@@ -1,80 +1,48 @@
 "use client";
 
-import { login, saveUser } from "@/actions/auth";
+import { login, loginWithCredentials } from "@/actions/auth";
+import AuthButton from "@/components/AuthButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { UserValidations } from "@/lib/utils/Uservalidations";
-import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
-import SignupButton from "./SignupButton";
 
-import { formatErrorMessages } from "@/lib/utils/errors";
-import { redirect } from "next/navigation";
+import { useState } from "react";
 
-import React from "react";
-
-export function SignupForm({
+export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
-  const [state, formAction] = useActionState(saveUser, {
-    error: false,
-    success: false,
-  });
-
-  //
-
-  useEffect(() => {
-    if (state.error) {
-      if (typeof state.errorDetails === "string") {
-        setErrorMessage(state.errorDetails);
-      } else {
-        setErrorMessage(formatErrorMessages(state.errorDetails));
-      }
-    } else if (state.success) {
-      console.log("User saved successfully");
-      // setErrorMessage(null);
-
-      setTimeout(() => {
-        redirect("/login");
-      }, 1000);
-    }
-  }, [state]);
-
-  //
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const fields = Object.fromEntries(formData.entries());
 
-    const validation = UserValidations.safeParse(fields);
-    if (!validation.success) {
-      console.error("Validation failed:", validation.error);
+    const formData = new FormData(e.currentTarget);
 
-      setErrorMessage(
-        formatErrorMessages(validation.error.flatten().fieldErrors)
-      );
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    if (!email || !password) {
+      setError("Email and password are required.");
+      return;
+    }
+
+    const result = await loginWithCredentials(formData);
+
+    console.log("res f", result);
+    if (result?.error) {
+      setError(result.error);
     } else {
-      React.startTransition(() => {
-        formAction({ formData });
-      });
+      // You can redirect here or clear form
     }
   };
 
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      {...props}
-      onSubmit={handleSubmit}
-    >
+    <form onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Sign UP</h1>
+        <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-muted-foreground text-sm text-balance">
-          Create an account to access all features.
+          Enter your email below to login to your account
         </p>
       </div>
       <div className="grid gap-6">
@@ -91,20 +59,26 @@ export function SignupForm({
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
+            <a
+              href="#"
+              className="ml-auto text-sm underline-offset-4 hover:underline"
+            >
+              Forgot your password?
+            </a>
           </div>
           <Input id="password" type="password" name="password" required />
         </div>
+        {/* <Button type="submit" className="w-full">
+          Login
+        </Button> */}
 
-        {state.success ? (
-          <span className="text-green-500 text-sm">
-            Signup successful! Redirecting...
-          </span>
-        ) : (
-          errorMessage && (
-            <span className="text-red-500 text-sm">{errorMessage}</span>
-          )
+        {error && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded text-sm text-center">
+            {error}
+          </div>
         )}
-        <SignupButton />
+
+        <AuthButton />
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
             Or continue with
@@ -125,10 +99,10 @@ export function SignupForm({
         </Button>
       </div>
       <div className="text-center text-sm">
-        You have an account?{" "}
-        <Link href="login" className="underline underline-offset-4">
-          Login
-        </Link>
+        Don&apos;t have an account?{" "}
+        <a href="#" className="underline underline-offset-4">
+          Sign up
+        </a>
       </div>
     </form>
   );

@@ -3,12 +3,10 @@
 import { PrismaClient } from "@/generated/prisma";
 import { signIn, signOut } from "@/lib/auth";
 import { UserValidations } from "@/lib/utils/Uservalidations";
-import { error } from "console";
-import { AuthError } from "next-auth";
 import { revalidatePath } from "next/cache";
-
+import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 import { saltAndHashPassword } from "@/lib/utils/password";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 const prisma = new PrismaClient();
 export const login = async (provider: string) => {
   await signIn(provider, {
@@ -35,7 +33,7 @@ const getUserByEmail = async (email: string) => {
     return null;
   }
 };
-
+/*
 export const loginWithCredentials = async (formData: FormData) => {
   const rawFormData = {
     email: formData.get("email") as string,
@@ -70,6 +68,79 @@ export const loginWithCredentials = async (formData: FormData) => {
   revalidatePath("/");
 };
 
+*/
+
+// export const loginWithCredentials = async (formData: FormData) => {
+//   console.log("x", formData);
+//   const rawFormData = {
+//     email: formData.get("email") as string,
+//     password: formData.get("password") as string,
+//   };
+
+//   console.log({ rawFormData });
+
+//   try {
+//     const res = await signIn("credentials", {
+//       redirect: false, // 👈 IMPORTANT
+//       email: rawFormData.email,
+//       password: rawFormData.password,
+//       role: "USER" as const,
+//     });
+
+//     console.log("from b", res);
+
+//     if (res?.error) {
+//       return { error: "Invalid email or password" };
+//     } else {
+//       return { success: "Login successfully" };
+//     }
+
+//     // return { success: true };
+//   } catch (error: any) {
+//     return {
+//       error: "Something went wrong. Please try again later.",
+//     };
+//   }
+// };
+
+export const loginWithCredentials = async (formData: FormData) => {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  console.log("🚀 Login attempt for:", email);
+
+  if (!email || !password) {
+    return { error: "Email and password are required" };
+  }
+
+  try {
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    console.log("📋 SignIn result:", result);
+
+    // If we reach here without throwing, authentication was successful
+    return { success: "Login successful" };
+  } catch (error) {
+    console.error("❌ Login error:", error);
+
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { error: "Invalid email or password" };
+        case "CallbackRouteError":
+          return { error: "Invalid email or password" };
+        default:
+          return { error: "Something went wrong. Please try again." };
+      }
+    }
+
+    return { error: "Something went wrong. Please try again." };
+  }
+};
 export async function registerWithCredentials(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -104,9 +175,6 @@ export const saveUser = async (
     FormDataEntryValue
   >;
 
-  // console.log("Fields:", fields);
-  // console.log({ formData, revalidatePath: revalidate, redirectTo });
-
   const validation = UserValidations.safeParse(fields);
 
   if (!validation.success) {
@@ -132,11 +200,18 @@ export const saveUser = async (
     });
     return { error: false, success: true };
   } catch (error: any) {
-    console.log(error);
+    // console.log(JSON.stringify(error));
+    if (error.code === "P2002" && error?.meta?.target?.includes("email")) {
+      return {
+        error: true,
+        success: false,
+        errorDetails: "This email is already registered.", // ✅ Safe for direct display
+      };
+    }
     return {
       error: true,
       success: false,
-      errorDetails: JSON.stringify(error),
+      errorDetails: "Something went wrong. Please try again.",
     };
   }
   //return { error: false, success: true };
