@@ -8,6 +8,8 @@ const prisma = new PrismaClient();
 
 import Credentials from "next-auth/providers/credentials";
 
+//
+
 export const {
   handlers: { GET, POST },
   signIn,
@@ -47,7 +49,7 @@ export const {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<any | null> {
         console.log("🔐 Authorize called with:", { email: credentials?.email });
 
         if (!credentials?.email || !credentials?.password) {
