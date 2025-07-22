@@ -38,9 +38,8 @@ export function LoginForm({
       if (result?.error) {
         setError(result.error);
       } else if (result?.success) {
-        // Success - redirect to dashboard
         console.log("✅ Login successful, redirecting...");
-        router.push("/dashboard"); // Adjust redirect URL
+        router.push("/dashboard");
         router.refresh();
       }
     } catch (error) {
